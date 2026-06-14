@@ -1,5 +1,20 @@
 # Delivery Roadmap
 
+## Current status
+
+The internal-alpha implementation was completed on 2026-06-14:
+
+- project registration and SQLite migrations;
+- task, workspace, session, and ordered event persistence;
+- managed detached worktrees and Git diff inspection;
+- daemon restart recovery through `thread/resume`;
+- reconnecting desktop UI with task history replay;
+- integration coverage for worktree isolation and restart recovery.
+
+The next milestone is the single-user MVP review and delivery loop: richer
+diff navigation, verification commands, interrupt/retry controls, explicit
+commit, cleanup, and packaged macOS distribution.
+
 ## Planning assumptions
 
 Team:
@@ -36,9 +51,9 @@ One experienced full-time engineer should plan 20-28 weeks for public beta.
 
 Exit: a contributor can run the smoke test and open the UI from a clean clone.
 
-## Weeks 1-2: internal alpha
+## Weeks 1-2: internal alpha (completed 2026-06-14)
 
-### Week 1
+### Runtime and interaction
 
 - Day 1: runtime discovery, version diagnostics, connection state.
 - Day 2: account state and supported login flows.
@@ -46,7 +61,7 @@ Exit: a contributor can run the smoke test and open the UI from a clean clone.
 - Day 4: turn lifecycle and item timeline.
 - Day 5: command/file approval UX and contract fixtures.
 
-### Week 2
+### Persistence and Git
 
 - Day 6: project registration and SQLite migrations.
 - Day 7: task/session/event persistence.

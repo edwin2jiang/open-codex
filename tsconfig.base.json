@@ -12,6 +12,8 @@
     "noEmit": true,
     "paths": {
       "@open-codex/codex-client": ["./packages/codex-client/src/index.ts"],
+      "@open-codex/git": ["./packages/git/src/index.ts"],
+      "@open-codex/storage": ["./packages/storage/src/index.ts"],
       "@open-codex/protocol": ["./packages/protocol/src/index.ts"]
     },
     "resolveJsonModule": true,

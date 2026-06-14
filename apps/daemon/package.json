@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "@open-codex/codex-client": "workspace:*",
+    "@open-codex/git": "workspace:*",
     "@open-codex/protocol": "workspace:*",
+    "@open-codex/storage": "workspace:*",
     "ws": "8.21.0"
   },
   "devDependencies": {

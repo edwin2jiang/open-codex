@@ -34,9 +34,15 @@ importers:
       "@open-codex/codex-client":
         specifier: workspace:*
         version: link:../../packages/codex-client
+      "@open-codex/git":
+        specifier: workspace:*
+        version: link:../../packages/git
       "@open-codex/protocol":
         specifier: workspace:*
         version: link:../../packages/protocol
+      "@open-codex/storage":
+        specifier: workspace:*
+        version: link:../../packages/storage
       ws:
         specifier: 8.21.0
         version: 8.21.0
@@ -82,7 +88,19 @@ importers:
         specifier: workspace:*
         version: link:../protocol
 
+  packages/git:
+    dependencies:
+      "@open-codex/protocol":
+        specifier: workspace:*
+        version: link:../protocol
+
   packages/protocol: {}
+
+  packages/storage:
+    dependencies:
+      "@open-codex/protocol":
+        specifier: workspace:*
+        version: link:../protocol
 
 packages:
   "@emnapi/core@1.10.0":

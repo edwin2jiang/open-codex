@@ -46,6 +46,9 @@ Open Codex never asks you to place an API key in this repository.
 
 ## 4. Generate protocol bindings
 
+This step is required when developing the adapter or validating a new Codex
+version, but is not required for the normal quick start.
+
 ```bash
 pnpm schema:codex
 ```
@@ -100,13 +103,21 @@ pnpm dev
 Open `http://127.0.0.1:1420`.
 
 1. Enter the absolute path to a local Git repository.
-2. Select **New thread**.
-3. Enter a bounded task.
-4. Press **Run task** or `Cmd/Ctrl+Enter`.
-5. Review approval dialogs before accepting.
+2. Select **Add project**.
+3. Enter a bounded task and keep **Isolated worktree** selected.
+4. Select **Create task**.
+5. Enter a prompt and press **Run task** or `Cmd/Ctrl+Enter`.
+6. Review approval dialogs before accepting.
+7. Inspect the persisted timeline and working diff.
 
 The current alpha uses your configured Codex model and may consume account
 usage when a turn is started.
+
+Local state is stored under `~/.open-codex`. For disposable testing:
+
+```bash
+OPEN_CODEX_HOME=/tmp/open-codex-test pnpm dev
+```
 
 ## 8. Run the Tauri shell
 
@@ -148,6 +159,12 @@ Approval is stuck:
 - do not restart repeatedly;
 - capture the method and request id from diagnostics;
 - unknown server requests intentionally fail closed.
+
+SQLite experimental warning:
+
+- Node.js 22 currently labels `node:sqlite` experimental;
+- the alpha deliberately uses the built-in driver to avoid native addon setup;
+- database migrations are versioned and covered by restart tests.
 
 ## 10. Clean-room verification
 

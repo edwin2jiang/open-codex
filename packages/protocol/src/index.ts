@@ -6,6 +6,93 @@ export type ApprovalDecision =
   | "decline"
   | "cancel";
 
+export type TaskStatus =
+  | "preparing"
+  | "ready"
+  | "running"
+  | "waitingForUser"
+  | "review"
+  | "completed"
+  | "failed"
+  | "interrupted"
+  | "archived";
+
+export type WorkspaceState = "creating" | "ready" | "dirty" | "archived";
+
+export type ProjectRecord = {
+  id: string;
+  name: string;
+  path: string;
+  repositoryRoot: string;
+  defaultBranch: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TaskRecord = {
+  id: string;
+  projectId: string;
+  title: string;
+  status: TaskStatus;
+  workspaceId?: string;
+  sessionId?: string;
+  threadId?: string;
+  lastError?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type WorkspaceRecord = {
+  id: string;
+  taskId: string;
+  projectId: string;
+  mode: "local" | "managedWorktree";
+  path: string;
+  baseRef: string;
+  state: WorkspaceState;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SessionRecord = {
+  id: string;
+  taskId: string;
+  threadId: string;
+  runtime: "codex";
+  runtimeVersion: string;
+  state: "active" | "disconnected" | "archived";
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PersistedEvent = {
+  id: string;
+  taskId: string;
+  sequence: number;
+  type: string;
+  payload: unknown;
+  occurredAt: string;
+};
+
+export type TaskDetail = {
+  task: TaskRecord;
+  project: ProjectRecord;
+  workspace?: WorkspaceRecord;
+  session?: SessionRecord;
+  events: PersistedEvent[];
+};
+
+export type StateSnapshot = {
+  projects: ProjectRecord[];
+  tasks: TaskRecord[];
+};
+
+export type DiffSnapshot = {
+  status: string;
+  unstaged: string;
+  staged: string;
+};
+
 export type AgentEvent =
   | {
       type: "runtime.ready";
@@ -70,21 +157,43 @@ export type AgentEvent =
 
 export type ClientCommand =
   | {
-      type: "thread.start";
+      type: "state.get";
       requestId: string;
-      cwd: string;
+    }
+  | {
+      type: "project.add";
+      requestId: string;
+      path: string;
+    }
+  | {
+      type: "task.create";
+      requestId: string;
+      projectId: string;
+      title: string;
+      baseRef?: string;
+      workspaceMode?: "local" | "managedWorktree";
       model?: string;
+    }
+  | {
+      type: "task.open";
+      requestId: string;
+      taskId: string;
+    }
+  | {
+      type: "task.diff";
+      requestId: string;
+      taskId: string;
     }
   | {
       type: "turn.start";
       requestId: string;
-      threadId: string;
+      taskId: string;
       text: string;
     }
   | {
       type: "turn.interrupt";
       requestId: string;
-      threadId: string;
+      taskId: string;
       turnId: string;
     }
   | {
@@ -94,10 +203,17 @@ export type ClientCommand =
       decision: ApprovalDecision;
     };
 
+export type OpenCodexEvent =
+  | AgentEvent
+  | {
+      type: "state.changed";
+      snapshot: StateSnapshot;
+    };
+
 export type ServerMessage =
   | {
       type: "event";
-      event: AgentEvent;
+      event: OpenCodexEvent;
     }
   | {
       type: "response";

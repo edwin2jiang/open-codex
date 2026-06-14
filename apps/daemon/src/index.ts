@@ -1,17 +1,28 @@
 import { createServer } from "node:http";
+import { homedir } from "node:os";
+import { join } from "node:path";
 
 import { CodexAppServerClient } from "@open-codex/codex-client";
+import { GitService } from "@open-codex/git";
 import {
   isClientCommand,
   type AgentEvent,
-  type ClientCommand,
+  type OpenCodexEvent,
   type ServerMessage,
 } from "@open-codex/protocol";
+import { OpenCodexStore } from "@open-codex/storage";
 import { WebSocket, WebSocketServer } from "ws";
+
+import { OpenCodexController } from "./controller.js";
 
 const host = process.env.OPEN_CODEX_HOST ?? "127.0.0.1";
 const port = Number(process.env.OPEN_CODEX_PORT ?? 4737);
+const dataDirectory =
+  process.env.OPEN_CODEX_HOME ?? join(homedir(), ".open-codex");
 const codex = new CodexAppServerClient();
+const store = new OpenCodexStore(join(dataDirectory, "open-codex.db"));
+const git = new GitService(join(dataDirectory, "worktrees"));
+const controller = new OpenCodexController({ store, git, codex });
 const sockets = new Set<WebSocket>();
 
 const server = createServer((request, response) => {
@@ -24,6 +35,8 @@ const server = createServer((request, response) => {
           running: codex.running,
           version: codex.version,
         },
+        projects: store.listProjects().length,
+        tasks: store.listTasks().length,
       }),
     );
     return;
@@ -73,7 +86,7 @@ webSocketServer.on("connection", async (socket) => {
 });
 
 codex.on("event", (event: AgentEvent) => {
-  broadcast({ type: "event", event });
+  void controller.handleAgentEvent(event);
 });
 
 codex.on("log", (line: string) => {
@@ -82,19 +95,21 @@ codex.on("log", (line: string) => {
   }
 });
 
+controller.on("event", (event: OpenCodexEvent) => {
+  broadcast({ type: "event", event });
+});
+
 server.listen(port, host, () => {
   console.log(`Open Codex daemon listening on http://${host}:${port}`);
 });
 
 async function handleMessage(socket: WebSocket, data: string): Promise<void> {
-  let command: ClientCommand;
-
+  let parsed: unknown;
   try {
-    const parsed = JSON.parse(data) as unknown;
+    parsed = JSON.parse(data) as unknown;
     if (!isClientCommand(parsed)) {
       throw new Error("Invalid client command");
     }
-    command = parsed;
   } catch (error) {
     send(socket, {
       type: "response",
@@ -106,45 +121,20 @@ async function handleMessage(socket: WebSocket, data: string): Promise<void> {
   }
 
   try {
-    const result = await execute(command);
+    const result = await controller.execute(parsed);
     send(socket, {
       type: "response",
-      requestId: command.requestId,
+      requestId: parsed.requestId,
       ok: true,
       result,
     });
   } catch (error) {
     send(socket, {
       type: "response",
-      requestId: command.requestId,
+      requestId: parsed.requestId,
       ok: false,
       error: errorMessage(error),
     });
-  }
-}
-
-async function execute(command: ClientCommand): Promise<unknown> {
-  switch (command.type) {
-    case "thread.start":
-      return codex.request("thread/start", {
-        cwd: command.cwd,
-        model: command.model,
-        approvalPolicy: "on-request",
-        sandbox: "workspaceWrite",
-      });
-    case "turn.start":
-      return codex.request("turn/start", {
-        threadId: command.threadId,
-        input: [{ type: "text", text: command.text }],
-      });
-    case "turn.interrupt":
-      return codex.request("turn/interrupt", {
-        threadId: command.threadId,
-        turnId: command.turnId,
-      });
-    case "approval.resolve":
-      codex.respond(command.serverRequestId, { decision: command.decision });
-      return {};
   }
 }
 
@@ -170,6 +160,7 @@ async function shutdown(): Promise<void> {
   }
   webSocketServer.close();
   await codex.stop();
+  store.close();
   server.close();
 }
 
