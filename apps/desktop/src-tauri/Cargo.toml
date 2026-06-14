@@ -1,0 +1,17 @@
+[package]
+name = "open-codex-desktop"
+version = "0.1.0"
+description = "Open Codex desktop shell"
+authors = ["Open Codex contributors"]
+edition = "2021"
+license = "Apache-2.0"
+
+[lib]
+name = "open_codex_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.2", features = [] }
+
+[dependencies]
+tauri = { version = "2.11.2", features = [] }

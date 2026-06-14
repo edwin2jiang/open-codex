@@ -1,0 +1,31 @@
+{
+  "name": "open-codex",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An unofficial, local-first open source desktop control plane for Codex.",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@11.6.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter '!open-codex' build",
+    "check": "pnpm format:check && pnpm -r typecheck && pnpm -r test",
+    "dev": "pnpm --parallel --filter @open-codex/daemon --filter @open-codex/desktop dev",
+    "dev:daemon": "pnpm --filter @open-codex/daemon dev",
+    "dev:desktop": "pnpm --filter @open-codex/desktop dev",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "schema:codex": "node scripts/generate-codex-schema.mjs",
+    "smoke:codex": "pnpm --filter @open-codex/codex-client smoke"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.30",
+    "esbuild": "0.28.1",
+    "prettier": "3.5.3",
+    "tsx": "4.20.3",
+    "tsup": "8.5.0",
+    "typescript": "6.0.3",
+    "vitest": "4.1.8"
+  }
+}

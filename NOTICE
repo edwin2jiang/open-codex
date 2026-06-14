@@ -1,0 +1,13 @@
+Open Codex
+Copyright 2026 Open Codex contributors
+
+Open Codex is an independent, unofficial project. It is not affiliated with,
+endorsed by, or sponsored by OpenAI.
+
+"OpenAI", "ChatGPT", and "Codex" may be trademarks of OpenAI. This project uses
+the term "Codex" only to describe interoperability with the open-source Codex
+CLI and app-server.
+
+Open Codex does not include OpenAI Codex source code or binaries. Users may
+install the Apache-2.0 licensed Codex CLI separately from:
+https://github.com/openai/codex
