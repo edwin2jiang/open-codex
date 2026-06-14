@@ -8,8 +8,9 @@ Open Codex does not reimplement the coding agent. It launches the open-source
 application model, and adds the product layer needed for safe parallel work:
 projects, tasks, approvals, diffs, worktrees, recovery, and audit history.
 
-> Status: architecture baseline and runnable vertical slice. Not ready for
-> production use.
+> Status: internal alpha. Project/task persistence, managed worktrees, Codex
+> session recovery, approvals, event history, and diff review are runnable. Not
+> ready for production use.
 
 ## Why this architecture
 
@@ -34,39 +35,47 @@ flowchart LR
   A <--> C["codex app-server<br/>stdio JSONL"]
 ```
 
-SQLite and worktree orchestration are specified but not yet implemented in the
-current vertical slice.
-
-## Current vertical slice
+## Current alpha
 
 - Detect and launch a locally installed Codex CLI.
 - Perform the required `initialize` / `initialized` handshake.
-- Create a thread for a local project.
-- Start a text turn and stream assistant output.
+- Register multiple local Git projects.
+- Create persistent tasks backed by a local checkout or isolated Git worktree.
+- Start a Codex thread for each task and resume it after daemon restart.
+- Persist projects, tasks, workspaces, sessions, and ordered events in SQLite.
+- Start text turns and stream assistant output.
 - Display command and file-change items.
 - Show command/file approval requests and return a decision.
+- Reconnect the desktop UI automatically and replay task history.
+- Show Git status plus staged and unstaged diffs.
 - Keep unknown upstream notifications observable for forward compatibility.
 - Generate protocol bindings from the installed Codex version.
 
 ## Quick start
 
-Requirements: Node.js 22+, pnpm 6+, and an authenticated Codex CLI.
+Requirements: Node.js 22+, pnpm 11.6+, and an authenticated Codex CLI.
 
 ```bash
 pnpm install
-pnpm schema:codex
 pnpm smoke:codex
 pnpm dev
 ```
 
 Open `http://127.0.0.1:1420`. The daemon listens only on
-`127.0.0.1:4737`.
+`127.0.0.1:4737`. Add an absolute Git repository path, create a task, and use
+the default isolated worktree mode.
+
+Open Codex stores local state under `~/.open-codex` by default. Set
+`OPEN_CODEX_HOME` to use another location.
 
 For the Tauri development shell:
 
 ```bash
 pnpm --filter @open-codex/desktop tauri dev
 ```
+
+Run `pnpm schema:codex` when changing the upstream adapter or validating a new
+Codex CLI version.
 
 ## Documentation
 

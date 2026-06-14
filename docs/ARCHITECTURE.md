@@ -94,12 +94,28 @@ The current alpha uses loopback WebSocket messages. The production API will:
 
 ## Persistence
 
-The implementation will use an append-only event table plus relational
-projections. A transaction first appends the event, then updates the relevant
-projection. On startup, projections can be checked or rebuilt.
+The alpha uses SQLite in WAL mode with relational projections for projects,
+tasks, workspaces, and sessions plus an ordered append-only event table. Event
+sequence numbers are allocated transactionally per task. The database defaults
+to `~/.open-codex/open-codex.db` and can be relocated with
+`OPEN_CODEX_HOME`.
+
+On daemon restart, Open Codex reloads the task/session linkage from SQLite. The
+first new turn calls `thread/resume` before `turn/start`, allowing Codex to
+restore its own persisted conversation while Open Codex replays its UI event
+history.
 
 Large command output and artifacts are content-addressed files outside SQLite.
-The database stores hashes, metadata, and paths.
+That artifact store is planned for the MVP; the alpha stores normalized event
+payloads directly in SQLite.
+
+## Managed worktrees
+
+The daemon resolves a canonical Git repository root and creates detached
+worktrees under `~/.open-codex/worktrees/<repository>/<task-id>`. Git commands
+use argument arrays rather than a shell. Cleanup refuses paths outside the
+managed root. Local-checkout mode remains available for deliberate,
+non-isolated work.
 
 ## Failure handling
 
