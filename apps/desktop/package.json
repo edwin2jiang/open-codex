@@ -12,15 +12,15 @@
   },
   "dependencies": {
     "@open-codex/protocol": "workspace:*",
-    "@tauri-apps/api": "2.11.0",
+    "@tauri-apps/api": "2.11.1",
     "react": "19.2.7",
     "react-dom": "19.2.7"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.11.2",
-    "@types/react": "19.2.14",
+    "@tauri-apps/cli": "2.11.4",
+    "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "6.0.2",
-    "vite": "8.0.16"
+    "@vitejs/plugin-react": "6.0.3",
+    "vite": "8.1.4"
   }
 }
