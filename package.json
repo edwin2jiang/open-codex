@@ -20,12 +20,12 @@
     "smoke:codex": "pnpm --filter @open-codex/codex-client smoke"
   },
   "devDependencies": {
-    "@types/node": "22.15.30",
-    "esbuild": "0.28.1",
-    "prettier": "3.5.3",
-    "tsx": "4.20.3",
-    "tsup": "8.5.0",
-    "typescript": "6.0.3",
-    "vitest": "4.1.8"
+    "@types/node": "26.2.0",
+    "esbuild": "0.28.2",
+    "prettier": "3.9.6",
+    "tsx": "4.23.12",
+    "tsup": "8.5.1",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
   }
 }
