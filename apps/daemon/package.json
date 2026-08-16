@@ -15,7 +15,7 @@
     "@open-codex/git": "workspace:*",
     "@open-codex/protocol": "workspace:*",
     "@open-codex/storage": "workspace:*",
-    "ws": "8.21.0"
+    "ws": "8.21.3"
   },
   "devDependencies": {
     "@types/ws": "8.18.1"
